@@ -1,7 +1,7 @@
-**/.idea/
+# Carpetas de IDE y compilación
+.idea/
+cmake-build-debug/
+D&NQuest/
 
-**/.cmake-build-debug
-
-**/.CMakeLists.txt
-
-**/.D&NQuest
+# Archivos específicos
+CMakeLists.txt
