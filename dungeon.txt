@@ -1,0 +1,11 @@
+1 Entrada 0.3
+2 Pasillo 0.2
+3 Sala 0.5
+4 Puente 0.4
+5 Tesoro 0.0
+
+1 2
+2 3
+3 4
+4 5
+2 4
