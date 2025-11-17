@@ -71,8 +71,8 @@ Graph<int>* cargarGrafo(const string& archivo) {
         double prob;
 
         ss >> id >> nombre >> prob;
-        auto casilla = new Casilla<int>(id, nombre, prob);
-        grafo->agregarCasilla(casilla);
+        Casilla<int>* casilla = new Casilla<int>(id, nombre, prob);
+        grafo->addCasilla(casilla);
 
         if (nombre == "Tesoro") {
             grafo->setCasillaTesoro(casilla);

@@ -5,7 +5,7 @@
 #include <string>
 
 template <typename T>
-class Casilla {
+class Casilla{
 private:
     T id;
     std::string nombre;
