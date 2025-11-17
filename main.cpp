@@ -39,7 +39,7 @@ struct ArrayMonstruos {
     }
 };
 
-ArrayMonstruos* cargarMonstruos(const string& archivo) {
+/*ArrayMonstruos* cargarMonstruos(const string& archivo) {
     ArrayMonstruos* monstruos = new ArrayMonstruos();
     ifstream file(archivo);
     string linea;
@@ -71,13 +71,16 @@ Graph<int>* cargarGrafo(const string& archivo) {
         double prob;
 
         ss >> id >> nombre >> prob;
-        Casilla<int>* casilla = new Casilla<int>(id, nombre, prob);
-        grafo->addCasilla(casilla);
+        grafo->addCasilla(id);
 
         if (nombre == "Tesoro") {
-            grafo->setCasillaTesoro(casilla);
+            grafo->setCasillaTesoro(id);
         }
     }
+
+    // Reiniciar el stream para la segunda pasada
+    file.clear();
+    file.seekg(0);
 
     // Segunda pasada: conectar vecinos
     while (getline(file, linea)) {
@@ -85,19 +88,13 @@ Graph<int>* cargarGrafo(const string& archivo) {
         int id1, id2;
         ss >> id1 >> id2;
 
-        auto c1 = grafo->buscarCasillaPorId(id1);
-        auto c2 = grafo->buscarCasillaPorId(id2);
-
-        if (c1 && c2) {
-            c1->agregarVecino(c2);
-            c2->agregarVecino(c1);
-        }
+        grafo->addEdge(id1, id2, false);
     }
 
     return grafo;
-}
+} */
 
-int main() {
+/*int main() {
     srand(time(0));
 
     cout << "=== DUNGEON CRAWLER ===\n";
@@ -164,5 +161,25 @@ int main() {
     delete grafo;
     delete monstruos;
     return 0;
-}
+} */
 
+
+int main() {
+    Graph<int> g;
+
+    g.addCasilla(1);
+    g.addCasilla(2);
+    g.addCasilla(3);
+
+    g.addEdge(1, 2, false);
+    g.addEdge(2, 3, false);
+
+    g.print();          // Debe mostrar algo como:
+                        //  <nombre casilla 1>: 2
+                        //  <nombre casilla 2>: 1 3
+                        //  <nombre casilla 3>: 2
+
+    g.mostrarRutaBFS(); // Por ahora solo imprime el mensaje
+
+    return 0;
+}

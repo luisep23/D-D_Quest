@@ -7,9 +7,9 @@ using namespace std;
 
 template <typename T>
 Node<Casilla<T>>* Graph<T>::findCasilla(const T& v){
-    Node<Vertex<T>>* current= vertices.getHead();
+    Node<Casilla<T>>* current= vertices.getHead();
     while (current) {
-        if (current->data.getData() == v) {
+        if (current->data.getId() == v) {
             return current;
         }
         current= current->next;
@@ -31,28 +31,28 @@ inline void Graph<T>::setCasillaInicial(Casilla<T> *inicio){
 template <typename T>
 bool Graph<T>::addCasilla(const T &v)
 {
-    if (findVertexNode(v) !=nullptr) {
+    if (findCasilla(v) !=nullptr) {
         return false;
     }
-    Vertex<T> vertex(v);
-    vertices.pushBack(vertex);
+    Casilla<T> casilla(v);
+    vertices.pushBack(casilla);
     return true;
 }
 
 template <typename T>
 bool Graph<T>::addEdge(const T& from,const T& to, const bool directed) {
-    Node<Casilla<T>>* originNode = findVertexNode(from);
-    Node<Casilla<T>>* toNode = findVertexNode(to);
+    Node<Casilla<T>>* originNode = findCasilla(from);
+    Node<Casilla<T>>* toNode = findCasilla(to);
     if (!originNode || !toNode) {
         return false;
     }
 
-    if (!originNode->data.adj.search(to)) {
-        originNode->data.adj.pushBack(to);
+    if (!originNode->data.vecinos.search(to)) {
+        originNode->data.vecinos.pushBack(to);
     }
     if (!directed) {
-        if (!toNode->data.adj.search(from)) {
-            toNode->data.adj.pushBack(from);
+        if (!toNode->data.vecinos.search(from)) {
+            toNode->data.vecinos.pushBack(from);
         }
     }
     return true;
@@ -63,7 +63,7 @@ void Graph<T>::print() const {
     Node<Casilla<T>>* current = vertices.getHead();
     while (current) {
         cout << current->data.getNombre() <<": ";
-        current->data.adj.print();
+        current->data.vecinos.print();
         current= current->next;
         cout<<endl;
     }
@@ -74,4 +74,5 @@ void Graph<T>::mostrarRutaBFS(){
     // Implementación del recorrido BFS
     cout<<"Mostrando ruta BFS desde la casilla inicial hasta la casilla tesoro..."<<endl;
     // Aquí iría la lógica del BFS
+
 }
