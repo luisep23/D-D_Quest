@@ -30,21 +30,7 @@ public:
     bool esVisitada() const { return visitada; }
     void marcarVisitada() { visitada = true; }
 
-    void agregarVecino(Casilla<T>* vecino) {
-        if (numVecinos >= capacidadVecinos) {
-            capacidadVecinos = (capacidadVecinos == 0) ? 4 : capacidadVecinos * 2;
-            Casilla<T>** nuevoArray = new Casilla<T>*[capacidadVecinos];
-            for (int i = 0; i < numVecinos; i++) {
-                nuevoArray[i] = vecinos[i];
-            }
-            delete[] vecinos;
-            vecinos = nuevoArray;
-        }
-        vecinos[numVecinos++] = vecino;
-    }
-
-    Casilla<T>** getVecinos() const { return vecinos; }
-    int getNumVecinos() const { return numVecinos; }
+    /*Se eliminaron de vecinos para simplificar, se incluyen en Graph.tpp como edges en formato de lista ligada*/ 
 };
 
 #endif

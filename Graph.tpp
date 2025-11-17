@@ -17,9 +17,20 @@ Node<Casilla<T>>* Graph<T>::findCasilla(const T& v){
     return nullptr;
 }
 
+template <typename T>
+void Graph<T>::setCasillaTesoro(Casilla<T> *tesoro){
+    casillaTesoro= tesoro;
+}
 
 template <typename T>
-bool Graph<T>::addCasilla(const T& v) {
+inline void Graph<T>::setCasillaInicial(Casilla<T> *inicio){
+    casillaInicial= inicio;
+}
+
+
+template <typename T>
+bool Graph<T>::addCasilla(const T &v)
+{
     if (findVertexNode(v) !=nullptr) {
         return false;
     }
@@ -27,7 +38,6 @@ bool Graph<T>::addCasilla(const T& v) {
     vertices.pushBack(vertex);
     return true;
 }
-
 
 template <typename T>
 bool Graph<T>::addEdge(const T& from,const T& to, const bool directed) {
@@ -52,9 +62,15 @@ template <typename T>
 void Graph<T>::print() const {
     Node<Casilla<T>>* current = vertices.getHead();
     while (current) {
-        cout << current->data.getData() <<": ";
+        cout << current->data.getNombre() <<": ";
         current->data.adj.print();
         current= current->next;
         cout<<endl;
     }
+}
+
+template <typename T>
+void Graph<T>::mostrarRutaBFS(){
+    // Implementación del recorrido BFS
+
 }

@@ -10,16 +10,26 @@ private:
     LinkedList<Casilla<T>> vertices;
     Node<Casilla<T>>* findCasilla(const T& v);
 
+    Node<Casilla<T>>* casillaInicial;
+
+    Node<Casilla<T>>* casillaTesoro;
+
 
 public:
-    Graph()= default;
 
+    void setCasillaTesoro(Casilla<T>* tesoro);
+
+    void setCasillaInicial(Casilla<T>* inicio);
+
+    Graph()= default;
 
     bool addCasilla(const T& v);
 
     bool addEdge(const T& from, const T& to, const bool directed);
 
     void print() const;
+
+    void mostrarRutaBFS();
 
 
 };

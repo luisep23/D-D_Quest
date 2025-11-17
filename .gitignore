@@ -6,3 +6,4 @@ D&NQuest/
 # Archivos específicos
 CMakeLists.txt
 c_cpp_properties.json
+settings.json
