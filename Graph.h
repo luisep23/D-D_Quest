@@ -30,8 +30,6 @@ public:
     void print() const;
 
     void mostrarRutaBFS();
-
-
 };
 
 #include "Graph.tpp"

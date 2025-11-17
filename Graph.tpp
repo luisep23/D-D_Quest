@@ -72,5 +72,6 @@ void Graph<T>::print() const {
 template <typename T>
 void Graph<T>::mostrarRutaBFS(){
     // Implementación del recorrido BFS
-
+    cout<<"Mostrando ruta BFS desde la casilla inicial hasta la casilla tesoro..."<<endl;
+    // Aquí iría la lógica del BFS
 }
