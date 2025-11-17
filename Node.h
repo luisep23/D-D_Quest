@@ -4,17 +4,11 @@
 template <typename T>
 class Node {
 public:
-    // Constructor
-    Node(const T& v)Node(const T& v) : data(v), next(nullptr) {} // Declaración del constructor
-
-    // Destructor virtual
-    virtual ~Node();  // Declaración del destructor
-
-    // Miembros de la clase
     T data;
-    Node* next;
+    Node<T>* next;
+
+    Node(const T& v) : data(v), next(nullptr) {}
+    ~Node() = default;
 };
 
-
 #endif // NODE_H
-

@@ -8,6 +8,7 @@ template <typename T>
 class Casilla{
 private:
     T id;
+    
     std::string nombre;
     double probabilidadMonstruo;
     bool visitada;
@@ -16,8 +17,8 @@ private:
     int capacidadVecinos;
 
 public:
-    Casilla(T id, std::string nombre, double prob)
-        : id(id), nombre(nombre), probabilidadMonstruo(prob), visitada(false),  numVecinos(0), capacidadVecinos(0) {}
+    Casilla(const T& id, const std::string& nombre = "", double probMonstruo = 0.0)
+        : id(id), nombre(nombre), probabilidadMonstruo(probMonstruo), visitada(false),  numVecinos(0), capacidadVecinos(0) {}
 
 
     ~Casilla() {

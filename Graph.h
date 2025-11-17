@@ -23,7 +23,7 @@ public:
 
     Graph()= default;
 
-    bool addCasilla(const T& v);
+    bool addCasilla(const T& v, const std::string& nombre, double prob);
 
     bool addEdge(const T& from, const T& to, const bool directed);
 

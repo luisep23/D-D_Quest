@@ -1,7 +1,8 @@
 # Carpetas de IDE y compilación
 .idea/
 cmake-build-debug/
-D&NQuest/
+DNDQuest/
+.vscode/
 
 # Archivos específicos
 CMakeLists.txt

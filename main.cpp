@@ -167,9 +167,9 @@ Graph<int>* cargarGrafo(const string& archivo) {
 int main() {
     Graph<int> g;
 
-    g.addCasilla(1);
-    g.addCasilla(2);
-    g.addCasilla(3);
+    g.addCasilla(1, "Inicio", 0.2);
+    g.addCasilla(2, "Intermedio", 0.3);
+    g.addCasilla(3, "Tesoro", 0.0);
 
     g.addEdge(1, 2, false);
     g.addEdge(2, 3, false);

@@ -1,9 +1,9 @@
 {
     "tasks": [
         {
-            "type": "shell",
+            "type": "cppbuild",
             "label": "C/C++: gcc.exe build active file",
-            "command": "D:\\Programas\\compiler\\mingw64\\bin\\gcc.exe",
+            "command": "D:\\Programas\\compiler\\ucrt64\\bin\\gcc.exe",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
@@ -12,7 +12,7 @@
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${fileDirname}"
             },
             "problemMatcher": [
                 "$gcc"

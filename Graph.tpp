@@ -29,12 +29,12 @@ inline void Graph<T>::setCasillaInicial(Casilla<T> *inicio){
 
 
 template <typename T>
-bool Graph<T>::addCasilla(const T &v)
+bool Graph<T>::addCasilla(const T &v, const std::string &nombre, double prob)
 {
     if (findCasilla(v) !=nullptr) {
         return false;
     }
-    Casilla<T> casilla(v);
+    Casilla<T> casilla(v, nombre, prob);
     vertices.pushBack(casilla);
     return true;
 }
@@ -50,6 +50,7 @@ bool Graph<T>::addEdge(const T& from,const T& to, const bool directed) {
     if (!originNode->data.vecinos.search(to)) {
         originNode->data.vecinos.pushBack(to);
     }
+
     if (!directed) {
         if (!toNode->data.vecinos.search(from)) {
             toNode->data.vecinos.pushBack(from);
@@ -62,7 +63,7 @@ template <typename T>
 void Graph<T>::print() const {
     Node<Casilla<T>>* current = vertices.getHead();
     while (current) {
-        cout << current->data.getNombre() <<": ";
+        cout << current->data.getNombre() << " (" << current->data.getId() << "): ";
         current->data.vecinos.print();
         current= current->next;
         cout<<endl;
