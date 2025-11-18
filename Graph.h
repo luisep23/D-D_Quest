@@ -18,10 +18,6 @@ private:
 
 public:
 
-    void setCasillaTesoro(Casilla<T>* tesoro);
-
-    void setCasillaInicial(Casilla<T>* inicio);
-
     Graph() : vertices(), casillaInicial(nullptr), casillaTesoro(nullptr) {}
 
     bool addCasilla(const T& v, const std::string& nombre, double prob);

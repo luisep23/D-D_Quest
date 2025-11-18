@@ -169,10 +169,17 @@ int main() {
 
     g.addCasilla(1, "Inicio", 0.2);
     g.addCasilla(2, "Intermedio", 0.3);
-    g.addCasilla(3, "Tesoro", 0.0);
+    g.addCasilla(3, "Intermedio", 0.3);
+    g.addCasilla(4, "Intermedio", 0.3);
+    g.addCasilla(5, "Intermedio", 0.3);
+    g.addCasilla(6, "Tesoro", 0.0);
 
     g.addEdge(1, 2, false);
-    g.addEdge(2, 3, false);
+    g.addEdge(2, 6, false);
+    g.addEdge(1, 3, false);
+    g.addEdge(3, 6, false);
+    g.addEdge(3, 4, false);
+    g.addEdge(4, 5, false);
 
     g.print();        
     
