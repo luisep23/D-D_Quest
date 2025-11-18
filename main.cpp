@@ -174,11 +174,8 @@ int main() {
     g.addEdge(1, 2, false);
     g.addEdge(2, 3, false);
 
-    g.print();          // Debe mostrar algo como:
-                        //  <nombre casilla 1>: 2
-                        //  <nombre casilla 2>: 1 3
-                        //  <nombre casilla 3>: 2
-
+    g.print();        
+    
     g.mostrarRutaBFS(); // Por ahora solo imprime el mensaje
 
     return 0;

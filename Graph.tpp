@@ -29,24 +29,41 @@ inline void Graph<T>::setCasillaInicial(Casilla<T> *inicio){
 
 
 template <typename T>
-bool Graph<T>::addCasilla(const T &v, const std::string &nombre, double prob)
-{
-    if (findCasilla(v) !=nullptr) {
+bool Graph<T>::addCasilla(const T& v, const std::string& nombre, double prob){
+
+    // No duplicados
+    if (findCasilla(v) != nullptr) {
         return false;
     }
-    Casilla<T> casilla(v, nombre, prob);
-    vertices.pushBack(casilla);
+
+    Casilla<T> nueva(v, nombre, prob);
+    vertices.pushBack(nueva);
+
+    // Apuntar a la casilla recién insertada
+    Node<Casilla<T>>* current = vertices.getHead();
+    while (current->next) {
+        current = current->next;
+    }
+
+    if (!casillaInicial) {
+        casillaInicial = current;
+    }
+    // Si quieres marcar el tesoro:
+    // if (nombre == "Tesoro") casillaTesoro = current;
+
     return true;
 }
 
 template <typename T>
-bool Graph<T>::addEdge(const T& from,const T& to, const bool directed) {
+bool Graph<T>::addEdge(const T& from, const T& to, const bool directed) {
     Node<Casilla<T>>* originNode = findCasilla(from);
-    Node<Casilla<T>>* toNode = findCasilla(to);
+    Node<Casilla<T>>* toNode     = findCasilla(to);
+
     if (!originNode || !toNode) {
         return false;
     }
 
+    // vecinos es LinkedList<T>, T = id
     if (!originNode->data.vecinos.search(to)) {
         originNode->data.vecinos.pushBack(to);
     }
@@ -56,6 +73,7 @@ bool Graph<T>::addEdge(const T& from,const T& to, const bool directed) {
             toNode->data.vecinos.pushBack(from);
         }
     }
+
     return true;
 }
 
@@ -65,8 +83,8 @@ void Graph<T>::print() const {
     while (current) {
         cout << current->data.getNombre() << " (" << current->data.getId() << "): ";
         current->data.vecinos.print();
-        current= current->next;
-        cout<<endl;
+        cout << endl;
+        current = current->next;
     }
 }
 

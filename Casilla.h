@@ -5,6 +5,9 @@
 #include <string>
 #include "LinkedList.h"
 
+
+/*Alusion a lo que en la clase fue conocido como Vertice. Misma logica para el grafo, mas informacion. Comparamos con el id y la data es el nombre*/
+
 template <typename T>
 class Casilla{
 private:
@@ -16,12 +19,7 @@ private:
 
 public:
     
-    friend ostream& operator<<(ostream& out, const Casilla& v) {
-        out<<v.getNombre();
-        return out;
-    }
-
-    bool operator==(const Casilla<T>& v) {
+    bool operator==(const Casilla<T>& v) const {
         return id==v.getId();
     }
 
@@ -29,9 +27,7 @@ public:
         : id(id), nombre(nombre), probabilidadMonstruo(probMonstruo), visitada(false){}
 
 
-    ~Casilla() {
-        // No es necesario liberar memoria manualmente ya que LinkedList maneja su propia memoria
-    }
+    ~Casilla() = default;
 
     T getId() const { return id; }
     std::string getNombre() const { return nombre; }
@@ -42,5 +38,13 @@ public:
 
     /*Se eliminaron de vecinos para simplificar, se incluyen en Graph.tpp como edges en formato de lista ligada*/ 
 };
+
+
+//Implementado anteriormente dentro de la clase, separada por fallo de compilacion
+template <typename T>
+std::ostream& operator<<(std::ostream& out, const Casilla<T>& v) {
+    out << v.getNombre() << " (" << v.getId() << ")";
+    return out;
+}
 
 #endif
