@@ -34,7 +34,7 @@ public:
     double getProbabilidad() const { return probabilidadMonstruo; }
     bool esVisitada() const { return visitada; }
     void marcarVisitada() { visitada = true; }
-    LinkedList<Casilla<T>> vecinos;
+    LinkedList<T> vecinos;
 
     /*Se eliminaron de vecinos para simplificar, se incluyen en Graph.tpp como edges en formato de lista ligada*/ 
 };

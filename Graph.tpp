@@ -7,12 +7,12 @@ using namespace std;
 
 template <typename T>
 Node<Casilla<T>>* Graph<T>::findCasilla(const T& v){
-    Node<Casilla<T>>* current= vertices.getHead();
+    Node<Casilla<T>>* current = vertices.getHead();
     while (current) {
         if (current->data.getId() == v) {
             return current;
         }
-        current= current->next;
+        current = current->next;
     }
     return nullptr;
 }
@@ -29,17 +29,15 @@ inline void Graph<T>::setCasillaInicial(Casilla<T> *inicio){
 
 
 template <typename T>
-bool Graph<T>::addCasilla(const T& v, const std::string& nombre, double prob){
-
-    // No duplicados
+bool Graph<T>::addCasilla(const T& v,  const std::string& nombre, double prob){
     if (findCasilla(v) != nullptr) {
-        return false;
+        return false; // ya existe
     }
 
     Casilla<T> nueva(v, nombre, prob);
     vertices.pushBack(nueva);
 
-    // Apuntar a la casilla recién insertada
+    // apuntar a la última casilla insertada
     Node<Casilla<T>>* current = vertices.getHead();
     while (current->next) {
         current = current->next;
@@ -48,14 +46,14 @@ bool Graph<T>::addCasilla(const T& v, const std::string& nombre, double prob){
     if (!casillaInicial) {
         casillaInicial = current;
     }
-    // Si quieres marcar el tesoro:
-    // if (nombre == "Tesoro") casillaTesoro = current;
 
     return true;
 }
 
+
 template <typename T>
 bool Graph<T>::addEdge(const T& from, const T& to, const bool directed) {
+
     Node<Casilla<T>>* originNode = findCasilla(from);
     Node<Casilla<T>>* toNode     = findCasilla(to);
 
@@ -63,7 +61,7 @@ bool Graph<T>::addEdge(const T& from, const T& to, const bool directed) {
         return false;
     }
 
-    // vecinos es LinkedList<T>, T = id
+    // vecinos es LinkedList<T> → guardamos solo IDs
     if (!originNode->data.vecinos.search(to)) {
         originNode->data.vecinos.pushBack(to);
     }
@@ -81,9 +79,29 @@ template <typename T>
 void Graph<T>::print() const {
     Node<Casilla<T>>* current = vertices.getHead();
     while (current) {
-        cout << current->data.getNombre() << " (" << current->data.getId() << "): ";
-        current->data.vecinos.print();
-        cout << endl;
+        std::cout << current->data.getNombre()
+                  << " (" << current->data.getId() << "): [";
+
+        // Recorremos la lista de IDs vecinos
+        Node<T>* vecinoIdNode = current->data.vecinos.getHead();
+        while (vecinoIdNode) {
+            // Buscamos la casilla asociada a ese ID
+            Node<Casilla<T>>* vecinoNode =
+                const_cast<Graph<T>*>(this)->findCasilla(vecinoIdNode->data);
+
+            if (vecinoNode) {
+                std::cout << " "
+                          << vecinoNode->data.getNombre()
+                          << " (" << vecinoNode->data.getId() << ") ->";
+            } else {
+                // Por si algo raro pasa, al menos mostramos el id
+                std::cout << " " << vecinoIdNode->data << " ->";
+            }
+
+            vecinoIdNode = vecinoIdNode->next;
+        }
+
+        std::cout << " ]" << std::endl;
         current = current->next;
     }
 }

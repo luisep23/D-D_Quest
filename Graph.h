@@ -8,6 +8,7 @@ template <typename T>
 class Graph{
 private:
     LinkedList<Casilla<T>> vertices;
+
     Node<Casilla<T>>* findCasilla(const T& v);
 
     Node<Casilla<T>>* casillaInicial;
@@ -21,7 +22,7 @@ public:
 
     void setCasillaInicial(Casilla<T>* inicio);
 
-    Graph()= default;
+    Graph() : vertices(), casillaInicial(nullptr), casillaTesoro(nullptr) {}
 
     bool addCasilla(const T& v, const std::string& nombre, double prob);
 
