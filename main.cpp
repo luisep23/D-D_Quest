@@ -168,10 +168,10 @@ int main() {
     Graph<int> g;
 
     g.addCasilla(1, "Inicio", 0.2);
-    g.addCasilla(2, "Intermedio", 0.3);
-    g.addCasilla(3, "Intermedio", 0.3);
-    g.addCasilla(4, "Intermedio", 0.3);
-    g.addCasilla(5, "Intermedio", 0.3);
+    g.addCasilla(2, "Intermedio1", 0.3);
+    g.addCasilla(3, "Intermedio2", 0.3);
+    g.addCasilla(4, "Intermedio3", 0.3);
+    g.addCasilla(5, "Intermedio4", 0.3);
     g.addCasilla(6, "Tesoro", 0.0);
 
     g.addEdge(1, 2, false);

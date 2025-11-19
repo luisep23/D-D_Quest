@@ -67,6 +67,8 @@ bool Graph<T>::addEdge(const T& from, const T& to, const bool directed) {
     return true;
 }
 
+
+// Imprime el grafo mostrando los nombres de las casillas y sus conexiones. Arregla el problema de mostrar solo ID que hay en Casilla.h
 template <typename T>
 void Graph<T>::print() const {
     Node<Casilla<T>>* current = vertices.getHead();
