@@ -22,11 +22,13 @@ public:
 
     bool addCasilla(const T& v, const std::string& nombre, double prob);
 
-    bool addEdge(const T& from, const T& to, const bool directed);
+    bool addEdge(const T& from, const T& to, const bool directed, int costo = 0);
 
-    void print() const;
+    void print();
 
     void mostrarRutaBFS();
+
+    void dijkstra(); // Para sacar la ruta de menor costo al tesoro
 };
 
 #include "Graph.tpp"

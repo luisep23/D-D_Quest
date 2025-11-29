@@ -44,7 +44,7 @@ bool Graph<T>::addCasilla(const T& v,  const std::string& nombre, double prob){
 
 
 template <typename T>
-bool Graph<T>::addEdge(const T& from, const T& to, const bool directed) {
+bool Graph<T>::addEdge(const T& from, const T& to, const bool directed, int costo) {
 
     Node<Casilla<T>>* originNode = findCasilla(from);
     Node<Casilla<T>>* toNode     = findCasilla(to);
@@ -53,14 +53,17 @@ bool Graph<T>::addEdge(const T& from, const T& to, const bool directed) {
         return false;
     }
 
+    Edge<T> vTo(to, costo);
+
     // vecinos es LinkedList<T> → guardamos solo IDs
-    if (!originNode->data.vecinos.search(to)) {
-        originNode->data.vecinos.pushBack(to);
+    if (!originNode->data.vecinos.search(vTo)) {
+        originNode->data.vecinos.pushBack(vTo);
     }
 
     if (!directed) {
-        if (!toNode->data.vecinos.search(from)) {
-            toNode->data.vecinos.pushBack(from);
+        Edge<T> fromEdge(from, costo);
+        if (!toNode->data.vecinos.search(fromEdge)) {
+            toNode->data.vecinos.pushBack(fromEdge);
         }
     }
 
@@ -70,23 +73,27 @@ bool Graph<T>::addEdge(const T& from, const T& to, const bool directed) {
 
 // Imprime el grafo mostrando los nombres de las casillas y sus conexiones. Arregla el problema de mostrar solo ID que hay en Casilla.h
 template <typename T>
-void Graph<T>::print() const {
+
+void Graph<T>::print(){
     Node<Casilla<T>>* current = vertices.getHead();
-    while (current) {
-        std::cout << current->data.getNombre()
-                  << " (" << current->data.getId() << "): [";
+    while (current != nullptr) {
+        // Imprimimos la casilla actual
+       cout << current->data.getNombre() << " (" << current->data.getId() << "): [";
+
+        //modificacion ahora incluye pesos
+        
 
         // Recorremos la lista de IDs vecinos
-        Node<T>* vecinoIdNode = current->data.vecinos.getHead();
-        while (vecinoIdNode) {
+        Node<Edge<T>>* vecinoIdNode = current->data.vecinos.getHead();
+
+        while (vecinoIdNode != nullptr) {
             // Buscamos la casilla asociada a ese ID
             Node<Casilla<T>>* vecinoNode =
-                const_cast<Graph<T>*>(this)->findCasilla(vecinoIdNode->data);
+                <Graph<T>*>(this)->findCasilla(vecinoIdNode->data);
 
             if (vecinoNode) {
-                std::cout << " "
-                          << vecinoNode->data.getNombre()
-                          << " (" << vecinoNode->data.getId() << ") ->";
+                cout << " "<< vecinoNode->data.getNombre() << " (" << vecinoNode->data.getId() << ") ->";
+
             } else {
                 // Por si algo raro pasa, al menos mostramos el id
                 std::cout << " " << vecinoIdNode->data << " ->";
@@ -95,7 +102,7 @@ void Graph<T>::print() const {
             vecinoIdNode = vecinoIdNode->next;
         }
 
-        std::cout << " ]" << std::endl;
+        cout << " ]" << std::endl;
         current = current->next;
     }
 }
@@ -103,47 +110,58 @@ void Graph<T>::print() const {
 template <typename T>
 void Graph<T>::mostrarRutaBFS() {
 
-    cout<<"\n=== MOSTRANDO RUTA MÁS CORTA AL TESORO (BFS) ===\n";
+    cout<<"\n=== MOSTRANDO RUTA MÁS CORTA AL TESORO (BFS) ==="<<endl;
 
-    if (!casillaInicial || !casillaTesoro) {
-        std::cout << "No se puede calcular la ruta (falta inicio o tesoro).\n";
+    if (casillaInicial == nullptr || casillaTesoro == nullptr) {
+        cout << "No se puede calcular la ruta (falta inicio o tesoro)"<<endl;
+        return;
+    }
+
+    
+    //cuenta vertices 
+    //nota para mi: posible optimizacion: guardar en un atributo el size del grafo para no estar llamando size() cada vez
+
+    int n = vertices.size();
+    if (n == 0) {
+        cout << "El grafo está vacío.\n";
         return;
     }
 
     // 1) Pasar todos los vértices a un arreglo para poder indexarlos fácilmente
-    int n = vertices.size();
-    if (n == 0) {
-        std::cout << "El grafo está vacío.\n";
-        return;
-    }
-
+    // Nota: no lo pude resolver con LinkedList, por eso el arreglo dinámico
     Node<Casilla<T>>** nodos = new Node<Casilla<T>>*[n];
-    Node<Casilla<T>>* aux = vertices.getHead();
-    int idx = 0;
-    while (aux != nullptr) {
-        nodos[idx++] = aux;
-        aux = aux->next;
+    Node<Casilla<T>>* current = vertices.getHead();
+    int index = 0;
+    while (current != nullptr) {
+        nodos[index++] = current;
+        current = current->next;
     }
 
     // 2) Buscar el índice del inicio y del tesoro
-    int idxInicio = -1;
-    int idxTesoro = -1;
+    int indexInicio = -1;
+    int indexTesoro = -1;
     for (int i = 0; i < n; ++i) {
-        if (nodos[i] == casillaInicial) idxInicio = i;
-        if (nodos[i] == casillaTesoro) idxTesoro = i;
+        if (nodos[i] == casillaInicial) {
+            indexInicio = i;
+        }
+        if (nodos[i] == casillaTesoro) {
+            indexTesoro = i;
+        }
     }
 
-    if (idxInicio == -1 || idxTesoro == -1) {
-        std::cout << "No se encontró inicio o tesoro en la lista de vértices.\n";
+    if (indexInicio == -1 || indexTesoro == -1) {
+        cout << "No se encontró inicio o tesoro en la lista de vértices"<<endl;
         delete[] nodos;
         return;
     }
 
     // 3) Arreglos auxiliares para BFS
-    bool* visitado = new bool[n];
-    int* padre = new int[n];      // guarda el índice del padre, -1 si no tiene
-    int* cola = new int[n];       // cola simple por índices
-    int ini = 0, fin = 0;         // [ini, fin) como rango en la cola
+    bool* visitado = new bool[n];  // marca si el nodo i ya fue visitado
+    int* queue = new int[n];  // queue para BFS
+    int* padre = new int[n]; // para reconstruir la ruta
+    int inicio = 0;
+    int fin = 0;
+
 
     for (int i = 0; i < n; ++i) {
         visitado[i] = false;
@@ -151,83 +169,125 @@ void Graph<T>::mostrarRutaBFS() {
     }
 
     // 4) Inicializar BFS desde el inicio
-    cola[fin++] = idxInicio;
-    visitado[idxInicio] = true;
-    padre[idxInicio] = -1; // sin padre
+    cola[fin++] = indexInicio;
+    visitado[indexInicio] = true;
+    padre[indexInicio] = -1; // sin padre
 
     bool encontrado = false;
 
     // 5) BFS
-    while (ini < fin && !encontrado) {
-        int idxActual = cola[ini++];
-        Node<Casilla<T>>* nodoActual = nodos[idxActual];
+    while (inicio < fin && !encontrado) {
+        int indexCurrent = cola[inicio++];
+        Node<Casilla<T>>* nodoActual = nodos[indexCurrent]; /*ya ocupe current antes*/ 
 
-        if (idxActual == idxTesoro) {
+        if (indexCurrent == indexTesoro) {
             encontrado = true;
             break;
         }
 
+        // modificado a que acepte pesos
         // Recorrer vecinos (IDs) de la casilla actual
-        LinkedList<T>& listaVecinos = nodoActual->data.vecinos;
-        Node<T>* v = listaVecinos.getHead();
+        LinkedList<Edge<T>>& listaVecinos = nodoActual->data.vecinos;
+        Node<Edge<T>>* edgeActual = listaVecinos.getHead(); 
 
-        while (v != nullptr) {
-            T idVecino = v->data;
+        while (edgeActual != nullptr) {
+            Edge<T>& edge = edgeActual->data;
+            // Buscar el índice del vecino
+            T idVecino = arista.destino
+
+            // Buscar el nodo de la casilla vecina por su id
             Node<Casilla<T>>* nodoVecino = findCasilla(idVecino);
 
             if (nodoVecino != nullptr) {
-                // Obtener índice del vecino en el arreglo nodos[]
-                int idxVecino = -1;
+                // Encontrar el índice del nodo vecino
+                int indexVecino = -1;
                 for (int i = 0; i < n; ++i) {
                     if (nodos[i] == nodoVecino) {
-                        idxVecino = i;
+                        indexVecino = i;
                         break;
                     }
                 }
 
-                if (idxVecino != -1 && !visitado[idxVecino]) {
-                    visitado[idxVecino] = true;
-                    padre[idxVecino] = idxActual;
-                    cola[fin++] = idxVecino;
+                // Si no ha sido visitado, marcarlo y agregarlo a la cola
+                if (indexVecino != -1 && !visitado[indexVecino]) {
+                    visitado[indexVecino] = true;
+                    padre[indexVecino] = indexCurrent;
+                    cola[fin++] = indexVecino;
                 }
             }
+            edgeActual = edgeActual->next;
 
-            v = v->next;
         }
-    }
 
+    }
     // 6) Reconstruir la ruta si se encontró el tesoro
     if (encontrado) {
-        std::cout << "\n=== RUTA MÁS CORTA AL TESORO ===\n";
+        cout << endl << "==== RUTA SECRETA AL TESORO ====" << endl;
 
-        // Contar tamaño de la ruta desde tesoro hasta inicio usando padre[]
-        int tamRuta = 0;
-        for (int i = idxTesoro; i != -1; i = padre[i]) {
-            ++tamRuta;
+        // Calcular el tamaño de la ruta
+        int tamanoRuta = 0;
+        for (int i = indexTesoro; i != -1; i = padre[i]) {
+            ++tamanoRuta;
         }
 
-        // Guardar índices de la ruta
-        int* ruta = new int[tamRuta];
-        int pos = tamRuta - 1;
-        for (int i = idxTesoro; i != -1; i = padre[i]) {
-            ruta[pos--] = i;
+        int* ruta = new int[tamanoRuta];
+        int rutaIndex = tamanoRuta - 1;
+        for (int i = indexTesoro; i != -1; i = padre[i]) {
+            ruta[rutaIndex--] = i;
         }
 
-        // Imprimir ruta de inicio a tesoro
-        for (int i = 0; i < tamRuta; ++i) {
-            std::cout << nodos[ruta[i]]->data.getNombre();
-            if (i < tamRuta - 1) std::cout << " -> ";
+        // Imprimir la ruta
+        for (int i = 0; i < tamanoRuta; ++i) {
+            int idx = ruta[i];
+            cout << nodos[idx]->data.getNombre() << " (" << nodos[idx]->data.getId() << ")";
+            if (i < tamanoRuta - 1) {
+                cout << " -> ";
+            }
         }
-        std::cout << "\n\n";
+        cout << endl;
+
+        // Imprimir el costo total de la ruta
+
+        // Calcular el costo total de la ruta
+        int costoTotal = 0;
+        for (int i = 0; i < tamanoRuta - 1; ++i) {
+            int idxActual = ruta[i];
+            int idxSiguiente = ruta[i + 1];
+            T idSiguiente = nodos[idxSiguiente]->data.getId();
+
+            // Buscar el edge que conecta idxActual con idxSiguiente
+            LinkedList<Edge<T>>& listaVecinos = nodos[idxActual]->data.vecinos;
+            Node<Edge<T>>* edgeActual = listaVecinos.getHead();
+            while (edgeActual != nullptr) {
+                if (edgeActual->data.destino == idSiguiente) {
+                    costoTotal += edgeActual->data.costo;
+                    break;
+                }
+                edgeActual = edgeActual->next;
+            }
+        }
+        // Ahora si imprimimos el costo total
+        cout << "Costo total de la ruta: " << costoTotal << endl;
+        cout << "Esta es la ruta mas corta(no la mas barata), no te pierdas!" << endl;
+
+
+
 
         delete[] ruta;
-    } else {
-        std::cout << "No se encontró ruta al tesoro.\n";
+
+    }else {
+        cout << "No se encontró una ruta al tesoro." << endl;
     }
+
 
     // 7) Liberar memoria auxiliar
     delete[] nodos;
     delete[] visitado;
     delete[] padre;
     delete[] cola;
+}
+
+template <typename T>
+void Graph<T>::dijkstra(){
+    cout << "Dijkstra aún no implementado." << endl;
 }

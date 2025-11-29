@@ -3,6 +3,7 @@
 #define CASILLA_H
 
 #include <string>
+#include "Edge.h"
 #include "LinkedList.h"
 
 
@@ -35,9 +36,9 @@ public:
     bool esVisitada() const { return visitada; }
     void marcarVisitada() { visitada = true; }
 
-    LinkedList<T> vecinos; //solo guarda las ids de las casillas vecinas. Se implementa en Graph como lista ligada de edges y se arregla con print en Graph.tpp.
+    LinkedList<Edge<T>> vecinos; //solo guarda las ids de las casillas vecinas. Se implementa en Graph como lista ligada de edges y se arregla con print en Graph.tpp.
 
-    /*Se eliminaron de vecinos para simplificar, se incluyen en Graph.tpp como edges en formato de lista ligada*/ 
+    /*Se eliminaron las funciones de vecinos para simplificar, se incluyen en Graph.tpp como edges en formato de lista ligada*/ 
 };
 
 
