@@ -131,13 +131,19 @@ Graph<int>* cargarGrafo(const std::string& archivo) {
 int main() {
     srand(time(0));
 
+    Graph<int>* grafo = cargarGrafo("dungeon.txt");
+    auto monstruos = cargarMonstruos("monstruos.txt");
+
+    cout<<"Se lee esto"<<endl;
+    grafo->print();
+
     cout << "=== DUNGEON CRAWLER ===\n";
     cout << "Ingresa tu nombre (o 'mysticpath' para modo cheat): ";
     string input;
     cin >> input;
 
-    Graph<int>* grafo = cargarGrafo("dungeon.txt");
-    auto monstruos = cargarMonstruos("monstruos.txt");
+    
+    
 
     if (!grafo || !monstruos) {
         cout << "Error al cargar datos.\n";
@@ -146,6 +152,7 @@ int main() {
 
     if (input == "mysticpath") {
         grafo->mostrarRutaBFS();
+        grafo->dijkstra();
         cout << "Presiona Enter para jugar...";
         cin.ignore(); // limpia el '\n' pendiente de cin >> input
         cin.get();
