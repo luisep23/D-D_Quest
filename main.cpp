@@ -59,12 +59,16 @@ ArrayMonstruos* cargarMonstruos(const string& archivo) {
 
 Graph<int>* cargarGrafo(const std::string& archivo) {
     std::ifstream file(archivo);
+    
+    cout<<"Se lee el archivo"<<endl;
+
     if (!file.is_open()) {
         std::cerr << "No se pudo abrir el archivo: " << archivo << std::endl;
         return nullptr;
     }
 
     Graph<int>* grafo = new Graph<int>();
+    cout<<"se crea el grafo"<<endl;
 
     std::string linea;
 
@@ -76,7 +80,10 @@ Graph<int>* cargarGrafo(const std::string& archivo) {
     // (línea en blanco)
     // ============================
     while (std::getline(file, linea)) {
+        cout<<"while"<<endl;
+
         if (linea.empty())
+            cout<<"Entra en el if"<<endl;
             break;  // fin de sección de casillas
 
         std::stringstream ss(linea);
@@ -86,12 +93,16 @@ Graph<int>* cargarGrafo(const std::string& archivo) {
 
         if (!(ss >> id >> nombre >> prob)) {
             // Línea mal formada, la ignoramos
+            cout<<"no se agrego una casilla"<<endl;
             continue;
         }
 
         // Usa tu método:
         // bool addCasilla(const T &v, const std::string &nombre, double prob)
         grafo->addCasilla(id, nombre, prob);
+        cout<<"Se agrego una casilla"<<endl;
+
+        grafo->print();
         // Dentro de addCasilla tú ya haces:
         // - pushBack de la casilla
         // - si nombre == "Inicio" / "Tesoro", setCasillaInicial/Tesoro
@@ -113,6 +124,7 @@ Graph<int>* cargarGrafo(const std::string& archivo) {
 
         if (!(ss >> id1 >> id2)) {
             // Línea mal formada
+            cout<<"Linea mal formada"<<endl;
             continue;
         }
 
