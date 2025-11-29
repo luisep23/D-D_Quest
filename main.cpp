@@ -188,5 +188,7 @@ int main() {
     
     g.mostrarRutaBFS(); // Por ahora solo imprime el mensaje
 
+    g.dijkstra();
+
     return 0;
 }

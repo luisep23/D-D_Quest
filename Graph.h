@@ -3,6 +3,10 @@
 
 #include "LinkedList.h"
 #include "Casilla.h"
+#include <limits>
+#include <iostream>
+
+using namespace std;
 
 template <typename T>
 class Graph{

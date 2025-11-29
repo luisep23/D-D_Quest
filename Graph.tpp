@@ -295,13 +295,141 @@ template <typename T>
 void Graph<T>::dijkstra(){
     Node<Casilla<T>>* current = vertices.getHead();
 
-    if (casillaInicial == nullptr || casillaTesoro == nullptr || vertices.size()==0) {
+
+    // Revisamos que exista estas casillas y que haya conexion con el inicio
+    int n = vertices.size();
+    if (casillaInicial == nullptr || casillaTesoro == nullptr || n==0) {
         cout << "No se puede calcular la ruta (falta inicio o tesoro)"<<endl;
         return;
     }
 
-    
+    // 2) Crear arreglo de punteros a los nodos de la lista de vértices
+    Node<Casilla<T>>** nodos = new Node<Casilla<T>>*[n];
+    Node<Casilla<T>>* actual = vertices.getHead();
+    int idx = 0;
+    while (actual) {
+        nodos[idx++] = actual;
+        actual = actual->next;
+    }
 
+    // Localizar índices de inicio y tesoro
+    int idxInicio = -1;
+    int idxTesoro = -1;
+    for (int i = 0; i < n; ++i) {
+        if (nodos[i] == casillaInicial) idxInicio = i;
+        if (nodos[i] == casillaTesoro) idxTesoro = i;
+    }
 
+    if (idxInicio == -1 || idxTesoro == -1) {
+        std::cout << "No se encontró inicio o tesoro en la lista de vértices.\n";
+        delete[] nodos;
+        return;
+    }
+
+    // 3) Arreglos auxiliares: distancias, visitado, padre
+    const int INF = std::numeric_limits<int>::max();
+
+    int* dist      = new int[n];
+    bool* visitado = new bool[n];
+    int* padre     = new int[n];
+
+    for (int i = 0; i < n; ++i) {
+        dist[i]      = INF;
+        visitado[i]  = false;
+        padre[i]     = -1;
+    }
+
+    dist[idxInicio] = 0;
+
+    // 4) Dijkstra O(n^2)
+    for (int iter = 0; iter < n; ++iter) {
+        // Elegir el vértice NO visitado con menor distancia
+        int u = -1;
+        int mejorDist = INF;
+        for (int i = 0; i < n; ++i) {
+            if (!visitado[i] && dist[i] < mejorDist) {
+                mejorDist = dist[i];
+                u = i;
+            }
+        }
+
+        // Si ya no hay alcanzables, terminamos
+        if (u == -1 || mejorDist == INF) break;
+
+        // Si llegamos al tesoro, podemos cortar (opcional)
+        if (u == idxTesoro) break;
+
+        visitado[u] = true;
+
+        Node<Casilla<T>>* nodoU = nodos[u];
+
+        // Recorrer vecinos (Edge<T>: destino + costo)
+        LinkedList<Edge<T>>& listaVecinos = nodoU->data.vecinos;
+        Node<Edge<T>>* edge = listaVecinos.getHead();
+
+        while (edge) {
+            const Edge<T>& arista = edge->data;
+            T idVecino = arista.destino;
+            int peso   = arista.costo;
+
+            // Buscar la casilla vecina por id
+            Node<Casilla<T>>* nodoV = findCasilla(idVecino);
+            if (nodoV) {
+                // Obtener el índice v de ese nodo en nodos[]
+                int v = -1;
+                for (int i = 0; i < n; ++i) {
+                    if (nodos[i] == nodoV) {
+                        v = i;
+                        break;
+                    }
+                }
+
+                if (v != -1 && !visitado[v] && dist[u] != INF) {
+                    int nuevaDist = dist[u] + peso;
+                    if (nuevaDist < dist[v]) {
+                        dist[v]  = nuevaDist;
+                        padre[v] = u;
+                    }
+                }
+            }
+
+            edge = edge->next;
+        }
+    }
+
+    // 5) Revisar si hay camino al tesoro
+    if (dist[idxTesoro] == INF) {
+        std::cout << "No hay ruta al tesoro.\n";
+    } else {
+        // 6) Reconstruir ruta usando padre[]
+        int tamRuta = 0;
+        for (int i = idxTesoro; i != -1; i = padre[i]) {
+            ++tamRuta;
+        }
+
+        int* ruta = new int[tamRuta];
+        int pos = tamRuta - 1;
+        for (int i = idxTesoro; i != -1; i = padre[i]) {
+            ruta[pos--] = i;
+        }
+
+        std::cout << "\n=== RUTA DE MENOR COSTO AL TESORO ===\n";
+        std::cout << "Costo total = " << dist[idxTesoro] << "\n";
+
+        for (int i = 0; i < tamRuta; ++i) {
+            std::cout << nodos[ruta[i]]->data.getNombre()
+                      << " (" << nodos[ruta[i]]->data.getId() << ")";
+            if (i < tamRuta - 1) std::cout << " -> ";
+        }
+        std::cout << "\n\n";
+
+        delete[] ruta;
+    }
+
+    // 7) Liberar memoria auxiliar
+    delete[] nodos;
+    delete[] dist;
+    delete[] visitado;
+    delete[] padre;
 
 }
