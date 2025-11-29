@@ -4,11 +4,13 @@
 
 
 template <typename T>
-class LinkedList
-{
+class LinkedList{
     public:
         /** Default constructor */
         LinkedList();
+        
+        LinkedList(const LinkedList<T>& other);
+        LinkedList<T>& operator=(const LinkedList<T>& other);
 
         /** Default destructor */
         virtual ~LinkedList();

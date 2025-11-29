@@ -21,6 +21,16 @@ LinkedList<T>::~LinkedList() {
     }
 }
 
+//Sacado del dijkstra por el profe
+template<typename T>
+LinkedList<T>::LinkedList(const LinkedList<T>& other) : head(nullptr), n(0) {
+    Node<T>* current = other.head;
+    while (current) {
+        pushBack(current->data);
+        current = current->next;
+    }
+}
+
 
 template<typename T>
 bool LinkedList<T>::empty() const {

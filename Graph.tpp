@@ -293,5 +293,15 @@ void Graph<T>::mostrarRutaBFS() {
 
 template <typename T>
 void Graph<T>::dijkstra(){
-    cout << "Dijkstra aún no implementado." << endl;
+    Node<Casilla<T>>* current = vertices.getHead();
+
+    if (casillaInicial == nullptr || casillaTesoro == nullptr || vertices.size()==0) {
+        cout << "No se puede calcular la ruta (falta inicio o tesoro)"<<endl;
+        return;
+    }
+
+    
+
+
+
 }
