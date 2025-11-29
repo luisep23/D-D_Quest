@@ -82,10 +82,12 @@ Graph<int>* cargarGrafo(const std::string& archivo) {
     while (std::getline(file, linea)) {
         cout<<"while"<<endl;
 
-        if (linea.empty())
-            cout<<"Entra en el if"<<endl;
-            break;  // fin de sección de casillas
+        if (linea.empty()){
+            cout<<"entra al if del while"<<endl;
+            break;
+        }
 
+        
         std::stringstream ss(linea);
         int id;
         std::string nombre;
