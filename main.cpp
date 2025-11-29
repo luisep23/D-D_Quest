@@ -59,8 +59,6 @@ ArrayMonstruos* cargarMonstruos(const string& archivo) {
 
 Graph<int>* cargarGrafo(const std::string& archivo) {
     std::ifstream file(archivo);
-    
-    cout<<"Se lee el archivo"<<endl;
 
     if (!file.is_open()) {
         std::cerr << "No se pudo abrir el archivo: " << archivo << std::endl;
@@ -68,75 +66,79 @@ Graph<int>* cargarGrafo(const std::string& archivo) {
     }
 
     Graph<int>* grafo = new Graph<int>();
-    cout<<"se crea el grafo"<<endl;
 
     std::string linea;
 
     // ============================
-    // 1ª pasada: crear casillas
-    // Formato:
-    // id nombre prob
-    // ...
-    // (línea en blanco)
+    // Buscar la sección ROOMS
     // ============================
     while (std::getline(file, linea)) {
-        cout<<"while"<<endl;
-
-        if (linea.empty()){
-            cout<<"entra al if del while"<<endl;
+        if (linea == "ROOMS")
             break;
-        }
-
-        
-        std::stringstream ss(linea);
-        int id;
-        std::string nombre;
-        double prob;
-
-        if (!(ss >> id >> nombre >> prob)) {
-            // Línea mal formada, la ignoramos
-            cout<<"no se agrego una casilla"<<endl;
-            continue;
-        }
-
-        // Usa tu método:
-        // bool addCasilla(const T &v, const std::string &nombre, double prob)
-        grafo->addCasilla(id, nombre, prob);
-        cout<<"Se agrego una casilla"<<endl;
-
-        grafo->print();
-        // Dentro de addCasilla tú ya haces:
-        // - pushBack de la casilla
-        // - si nombre == "Inicio" / "Tesoro", setCasillaInicial/Tesoro
     }
 
     // ============================
-    // 2ª pasada: crear aristas
+    // 1ª pasada: ROOMS
     // Formato:
-    // id1 id2 [costo]
-    // (si no hay costo, se asume 1)
+    // id|nombre|probMonstruo
+    // termina con END_ROOMS
     // ============================
     while (std::getline(file, linea)) {
-        if (linea.empty())
+        if (linea == "END_ROOMS")
+            break;
+
+        if (linea.empty() || linea[0] == '#')
+            continue;
+
+        // id|nombre|prob
+        size_t p1 = linea.find('|');
+        size_t p2 = linea.find('|', p1 + 1);
+        if (p1 == std::string::npos || p2 == std::string::npos) {
+            std::cerr << "Linea de ROOM invalida: " << linea << std::endl;
+            continue;
+        }
+
+        std::string sid   = linea.substr(0, p1);
+        std::string nombre = linea.substr(p1 + 1, p2 - p1 - 1);
+        std::string sprob = linea.substr(p2 + 1);
+
+        int id = std::stoi(sid);
+        double prob = std::stod(sprob);
+
+        grafo->addCasilla(id, nombre, prob);
+    }
+
+    // ============================
+    // Buscar la sección EDGES
+    // ============================
+    while (std::getline(file, linea)) {
+        if (linea == "EDGES")
+            break;
+    }
+
+    // ============================
+    // 2ª pasada: EDGES
+    // Formato:
+    // idOrigen idDestino
+    // termina con END_EDGES
+    // ============================
+    while (std::getline(file, linea)) {
+        if (linea == "END_EDGES")
+            break;
+
+        if (linea.empty() || linea[0] == '#')
             continue;
 
         std::stringstream ss(linea);
         int id1, id2;
-        int costo = 1;
 
         if (!(ss >> id1 >> id2)) {
-            // Línea mal formada
-            cout<<"Linea mal formada"<<endl;
+            std::cerr << "Linea de EDGE invalida: " << linea << std::endl;
             continue;
         }
 
-        // Si hay un tercer valor, lo usamos como costo
-        if (!(ss >> costo)) {
-            costo = 1;
-        }
-
-        // bool addEdge(const T& from, const T& to, const bool directed, int costo = 0);
-        grafo->addEdge(id1, id2, /*directed=*/false, costo);
+        // No hay costo en el archivo → asumimos 1
+        grafo->addEdge(id1, id2, /*directed=*/false, /*costo=*/1);
     }
 
     return grafo;
