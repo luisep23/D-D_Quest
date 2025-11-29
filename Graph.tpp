@@ -17,9 +17,14 @@ Node<Casilla<T>>* Graph<T>::findCasilla(const T& v){
     return nullptr;
 }
 
+template <typename T>
+Node<Casilla<T>> *Graph<T>::getCasillaInicial(){
+    return casillaInicial;
+}
 
 template <typename T>
-bool Graph<T>::addCasilla(const T& v,  const std::string& nombre, double prob){
+bool Graph<T>::addCasilla(const T &v, const std::string &nombre, double prob)
+{
     if (findCasilla(v) != nullptr) {
         return false; // ya existe
     }
@@ -41,7 +46,6 @@ bool Graph<T>::addCasilla(const T& v,  const std::string& nombre, double prob){
 
     return true;
 }
-
 
 template <typename T>
 bool Graph<T>::addEdge(const T& from, const T& to, const bool directed, int costo) {

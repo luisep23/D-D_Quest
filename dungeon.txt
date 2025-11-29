@@ -1,11 +1,45 @@
-1 Entrada 0.3
-2 Pasillo 0.2
-3 Sala 0.5
-4 Puente 0.4
-5 Tesoro 0.0
+# DUNGEON DEL PROYECTO
+# Formato:
+# ROOMS:
+#   id|nombre|probMonstruo
+# EDGES:
+#   idOrigen idDestino
 
-1 2
+ROOMS
+0|Inicio|0.10
+1|Pasillo Norte|0.40
+2|Pasillo Este|0.30
+3|Sala del Guardian|0.80
+4|Camara Oscura|0.50
+5|Tesoro|0.20
+6|Pasillo Sur|0.35
+7|Cueva del Eco|0.45
+8|Santuario Roto|0.25
+9|Puente Colgante|0.60
+10|Sala de Trampas|0.70
+11|Biblioteca Secreta|0.15
+12|Pozo de las Almas|0.90
+13|Salida Secreta|0.05
+END_ROOMS
+
+EDGES
+0 1
+0 2
+1 3
 2 3
-3 4
-4 5
 2 4
+3 5
+4 5
+0 6
+6 2
+6 7
+7 8
+8 3
+4 9
+9 10
+10 12
+12 5
+8 11
+11 13
+5 13
+END_EDGES

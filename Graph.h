@@ -22,6 +22,8 @@ private:
 
 public:
 
+    Node<Casilla<T>>* getCasillaInicial();
+
     Graph() : vertices(), casillaInicial(nullptr), casillaTesoro(nullptr) {}
 
     bool addCasilla(const T& v, const std::string& nombre, double prob);

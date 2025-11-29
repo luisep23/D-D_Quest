@@ -1,4 +1,4 @@
-// main.cpp
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -39,7 +39,7 @@ struct ArrayMonstruos {
     }
 };
 
-/*ArrayMonstruos* cargarMonstruos(const string& archivo) {
+ArrayMonstruos* cargarMonstruos(const string& archivo) {
     ArrayMonstruos* monstruos = new ArrayMonstruos();
     ifstream file(archivo);
     string linea;
@@ -71,30 +71,13 @@ Graph<int>* cargarGrafo(const string& archivo) {
         double prob;
 
         ss >> id >> nombre >> prob;
-        grafo->addCasilla(id);
-
-        if (nombre == "Tesoro") {
-            grafo->setCasillaTesoro(id);
-        }
-    }
-
-    // Reiniciar el stream para la segunda pasada
-    file.clear();
-    file.seekg(0);
-
-    // Segunda pasada: conectar vecinos
-    while (getline(file, linea)) {
-        stringstream ss(linea);
-        int id1, id2;
-        ss >> id1 >> id2;
-
-        grafo->addEdge(id1, id2, false);
+        grafo->addCasilla(id, nombre, prob);
     }
 
     return grafo;
-} */
+}
 
-/*int main() {
+int main() {
     srand(time(0));
 
     cout << "=== DUNGEON CRAWLER ===\n";
@@ -116,14 +99,14 @@ Graph<int>* cargarGrafo(const string& archivo) {
     auto casillaActual = grafo->getCasillaInicial();
 
     while (true) {
-        cout << "\n=== " << casillaActual->getNombre() << " ===\n";
+        cout << "\n=== " << casillaActual->data->getNombre() << " ===\n";
         cout << "Stats: HP=" << heroe.getHP() << " ATK=" << heroe.getATK()
              << " DEF=" << heroe.getDEF() << "\n";
 
         // Encuentro con monstruo
-        if (!casillaActual->esVisitada()) {
+        if (!casillaActual->data->esVisitada()) {
             double rand_prob = (double)rand() / RAND_MAX;
-            if (rand_prob < casillaActual->getProbabilidad()) {
+            if (rand_prob < casillaActual->data->getProbabilidad()) {
                 int idx = rand() % monstruos->size;
                 Monstruo enemigo = *monstruos->datos[idx];
 
@@ -132,19 +115,19 @@ Graph<int>* cargarGrafo(const string& archivo) {
                     break;
                 }
             }
-            casillaActual->marcarVisitada();
+            casillaActual->data->marcarVisitada();
         }
 
         // Verificar victoria
-        if (casillaActual->getNombre() == "Tesoro") {
+        if (casillaActual->data->getNombre() == "Tesoro") {
             cout << "\n¡HAS ENCONTRADO EL TESORO! ¡VICTORIA!\n";
             break;
         }
 
         // Mostrar opciones
         cout << "\nCasillas conectadas:\n";
-        Casilla<int>** vecinos = casillaActual->getVecinos();
-        int numVecinos = casillaActual->getNumVecinos();
+        Casilla<int>** vecinos = casillaActual->data->getVecinos();
+        int numVecinos = casillaActual->data->getNumVecinos();
         for (int i = 0; i < numVecinos; i++) {
             cout << i + 1 << ". " << vecinos[i]->getNombre() << "\n";
         }
@@ -161,34 +144,5 @@ Graph<int>* cargarGrafo(const string& archivo) {
     delete grafo;
     delete monstruos;
     return 0;
-} */
-
-
-int main() {
-    Graph<int> g;
-
-    g.addCasilla(1, "Inicio", 0.2);
-    g.addCasilla(2, "Intermedio1", 0.3);
-    g.addCasilla(3, "Intermedio2", 0.3);
-    g.addCasilla(4, "Intermedio3", 0.3);
-    g.addCasilla(5, "Intermedio4", 0.3);
-    g.addCasilla(6, "Tesoro", 0.0);
-    g.addCasilla(7, "Extra", 0.5);
-
-    g.addEdge(1, 2, false, 1);
-    g.addEdge(1, 3, false, 4);
-    g.addEdge(2, 4, false, 2);
-    g.addEdge(3, 4, false, 1);
-    g.addEdge(4, 5, false, 3);
-    g.addEdge(5, 6, false, 1);
-    g.addEdge(3, 7, false, 2);
-    g.addEdge(6, 7, true, 5);
-
-    g.print();        
-    
-    g.mostrarRutaBFS(); // Por ahora solo imprime el mensaje
-
-    g.dijkstra();
-
-    return 0;
 }
+
