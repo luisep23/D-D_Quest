@@ -11,16 +11,16 @@ class Edge{
 public:
     Edge(const T& value):destino(value), costo(0){}
 
-    Edge(const T& value, costo):destino(value), costo(costo){}
+    Edge(const T& value, int costo):destino(value), costo(costo){}
     T destino;
     int costo;
 
-    friend ostream& operator<<(ostream& out, const Vertex<T>& v) {
+    friend ostream& operator<<(ostream& out, const Edge<T>& v) {
         out << v.destino << " (w=" << v.costo << ")";
         return out;
     }
 
-    bool operator==(const Vertex<T>& v) const {
+    bool operator==(const Edge<T>& v) const {
         return destino == v.destino;
     }
 

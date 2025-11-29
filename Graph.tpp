@@ -82,27 +82,31 @@ void Graph<T>::print(){
 
         //modificacion ahora incluye pesos
         
-
         // Recorremos la lista de IDs vecinos
         Node<Edge<T>>* vecinoIdNode = current->data.vecinos.getHead();
+        Node<Casilla<T>>* vecinoNode = nullptr;
 
         while (vecinoIdNode != nullptr) {
-            // Buscamos la casilla asociada a ese ID
-            Node<Casilla<T>>* vecinoNode =
-                <Graph<T>*>(this)->findCasilla(vecinoIdNode->data);
 
-            if (vecinoNode) {
-                cout << " "<< vecinoNode->data.getNombre() << " (" << vecinoNode->data.getId() << ") ->";
+            Edge<T>& v = vecinoIdNode->data;
+
+            // Buscamos la casilla asociada a ese ID
+            vecinoNode = this->findCasilla(vecinoIdNode->data.destino);
+
+            if (vecinoNode != nullptr) {
+                cout << " "<< vecinoNode->data.getNombre() << " (" << vecinoNode->data.getId() << ")" << "w= "<< v.costo <<" ->";
+                /*Se impreme el id por si 2 casillas tienen el mismo nombre, asi no comparten id*/
+
 
             } else {
                 // Por si algo raro pasa, al menos mostramos el id
-                std::cout << " " << vecinoIdNode->data << " ->";
+                cout << " " << v.destino << " ->";
             }
 
             vecinoIdNode = vecinoIdNode->next;
         }
 
-        cout << " ]" << std::endl;
+        cout << " ]" << endl;
         current = current->next;
     }
 }
@@ -169,15 +173,14 @@ void Graph<T>::mostrarRutaBFS() {
     }
 
     // 4) Inicializar BFS desde el inicio
-    cola[fin++] = indexInicio;
+    queue[fin++] = indexInicio;
     visitado[indexInicio] = true;
     padre[indexInicio] = -1; // sin padre
 
     bool encontrado = false;
-
     // 5) BFS
     while (inicio < fin && !encontrado) {
-        int indexCurrent = cola[inicio++];
+        int indexCurrent = queue[inicio++];
         Node<Casilla<T>>* nodoActual = nodos[indexCurrent]; /*ya ocupe current antes*/ 
 
         if (indexCurrent == indexTesoro) {
@@ -193,7 +196,8 @@ void Graph<T>::mostrarRutaBFS() {
         while (edgeActual != nullptr) {
             Edge<T>& edge = edgeActual->data;
             // Buscar el índice del vecino
-            T idVecino = arista.destino
+            T idVecino = edge.destino;
+
 
             // Buscar el nodo de la casilla vecina por su id
             Node<Casilla<T>>* nodoVecino = findCasilla(idVecino);
@@ -208,11 +212,11 @@ void Graph<T>::mostrarRutaBFS() {
                     }
                 }
 
-                // Si no ha sido visitado, marcarlo y agregarlo a la cola
+                // Si no ha sido visitado, marcarlo y agregarlo a la queue
                 if (indexVecino != -1 && !visitado[indexVecino]) {
                     visitado[indexVecino] = true;
                     padre[indexVecino] = indexCurrent;
-                    cola[fin++] = indexVecino;
+                    queue[fin++] = indexVecino;
                 }
             }
             edgeActual = edgeActual->next;
@@ -284,7 +288,7 @@ void Graph<T>::mostrarRutaBFS() {
     delete[] nodos;
     delete[] visitado;
     delete[] padre;
-    delete[] cola;
+    delete[] queue;
 }
 
 template <typename T>
