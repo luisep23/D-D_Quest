@@ -24,6 +24,8 @@ public:
 
     Node<Casilla<T>>* getCasillaInicial();
 
+    Node<Casilla<T>>* getCasillaPorId(const T& v);
+
     Graph() : vertices(), casillaInicial(nullptr), casillaTesoro(nullptr) {}
 
     bool addCasilla(const T& v, const std::string& nombre, double prob);

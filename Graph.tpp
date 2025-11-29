@@ -23,6 +23,11 @@ Node<Casilla<T>> *Graph<T>::getCasillaInicial(){
 }
 
 template <typename T>
+Node<Casilla<T>>* getCasillaPorId(const T& v) {
+    return findCasilla(v);
+}
+
+template <typename T>
 bool Graph<T>::addCasilla(const T &v, const std::string &nombre, double prob)
 {
     if (findCasilla(v) != nullptr) {

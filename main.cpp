@@ -57,21 +57,72 @@ ArrayMonstruos* cargarMonstruos(const string& archivo) {
     return monstruos;
 }
 
-Graph<int>* cargarGrafo(const string& archivo) {
-    Graph<int>* grafo = new Graph<int>();
-    ifstream file(archivo);
-    string linea;
+Graph<int>* cargarGrafo(const std::string& archivo) {
+    std::ifstream file(archivo);
+    if (!file.is_open()) {
+        std::cerr << "No se pudo abrir el archivo: " << archivo << std::endl;
+        return nullptr;
+    }
 
-    // Primera pasada: crear casillas
-    while (getline(file, linea)) {
-        if (linea.empty()) break;
-        stringstream ss(linea);
+    Graph<int>* grafo = new Graph<int>();
+
+    std::string linea;
+
+    // ============================
+    // 1ª pasada: crear casillas
+    // Formato:
+    // id nombre prob
+    // ...
+    // (línea en blanco)
+    // ============================
+    while (std::getline(file, linea)) {
+        if (linea.empty())
+            break;  // fin de sección de casillas
+
+        std::stringstream ss(linea);
         int id;
-        string nombre;
+        std::string nombre;
         double prob;
 
-        ss >> id >> nombre >> prob;
+        if (!(ss >> id >> nombre >> prob)) {
+            // Línea mal formada, la ignoramos
+            continue;
+        }
+
+        // Usa tu método:
+        // bool addCasilla(const T &v, const std::string &nombre, double prob)
         grafo->addCasilla(id, nombre, prob);
+        // Dentro de addCasilla tú ya haces:
+        // - pushBack de la casilla
+        // - si nombre == "Inicio" / "Tesoro", setCasillaInicial/Tesoro
+    }
+
+    // ============================
+    // 2ª pasada: crear aristas
+    // Formato:
+    // id1 id2 [costo]
+    // (si no hay costo, se asume 1)
+    // ============================
+    while (std::getline(file, linea)) {
+        if (linea.empty())
+            continue;
+
+        std::stringstream ss(linea);
+        int id1, id2;
+        int costo = 1;
+
+        if (!(ss >> id1 >> id2)) {
+            // Línea mal formada
+            continue;
+        }
+
+        // Si hay un tercer valor, lo usamos como costo
+        if (!(ss >> costo)) {
+            costo = 1;
+        }
+
+        // bool addEdge(const T& from, const T& to, const bool directed, int costo = 0);
+        grafo->addEdge(id1, id2, /*directed=*/false, costo);
     }
 
     return grafo;
@@ -85,28 +136,37 @@ int main() {
     string input;
     cin >> input;
 
-    auto grafo = cargarGrafo("dungeon.txt");
+    Graph<int>* grafo = cargarGrafo("dungeon.txt");
     auto monstruos = cargarMonstruos("monstruos.txt");
+
+    if (!grafo || !monstruos) {
+        cout << "Error al cargar datos.\n";
+        return 1;
+    }
 
     if (input == "mysticpath") {
         grafo->mostrarRutaBFS();
         cout << "Presiona Enter para jugar...";
-        cin.ignore();
+        cin.ignore(); // limpia el '\n' pendiente de cin >> input
         cin.get();
     }
 
     Heroe heroe(input, 50, 10, 5);
-    auto casillaActual = grafo->getCasillaInicial();
+
+    // OJO: casillaInicial es Node<Casilla<int>>*
+    Node<Casilla<int>>* casillaActual = grafo->getCasillaInicial();
 
     while (true) {
-        cout << "\n=== " << casillaActual->data->getNombre() << " ===\n";
-        cout << "Stats: HP=" << heroe.getHP() << " ATK=" << heroe.getATK()
+        // data es un OBJETO Casilla<int>, no un puntero
+        cout << "\n=== " << casillaActual->data.getNombre() << " ===\n";
+        cout << "Stats: HP=" << heroe.getHP()
+             << " ATK=" << heroe.getATK()
              << " DEF=" << heroe.getDEF() << "\n";
 
-        // Encuentro con monstruo
-        if (!casillaActual->data->esVisitada()) {
+        // Encuentro con monstruo (solo la primera vez que entras)
+        if (!casillaActual->data.esVisitada()) {
             double rand_prob = (double)rand() / RAND_MAX;
-            if (rand_prob < casillaActual->data->getProbabilidad()) {
+            if (rand_prob < casillaActual->data.getProbabilidad()) {
                 int idx = rand() % monstruos->size;
                 Monstruo enemigo = *monstruos->datos[idx];
 
@@ -115,34 +175,76 @@ int main() {
                     break;
                 }
             }
-            casillaActual->data->marcarVisitada();
+            casillaActual->data.marcarVisitada();
         }
 
         // Verificar victoria
-        if (casillaActual->data->getNombre() == "Tesoro") {
+        if (casillaActual->data.getNombre() == "Tesoro") {
             cout << "\n¡HAS ENCONTRADO EL TESORO! ¡VICTORIA!\n";
             break;
         }
 
-        // Mostrar opciones
+        // ===============================
+        // Mostrar opciones de vecinos
+        // ===============================
         cout << "\nCasillas conectadas:\n";
-        Casilla<int>** vecinos = casillaActual->data->getVecinos();
-        int numVecinos = casillaActual->data->getNumVecinos();
-        for (int i = 0; i < numVecinos; i++) {
-            cout << i + 1 << ". " << vecinos[i]->getNombre() << "\n";
+
+        // vecinos es LinkedList<Edge<int>> publico en Casilla<int>
+        LinkedList<Edge<int>>& listaVecinos = casillaActual->data.vecinos;
+
+        // 1ª pasada: contar vecinos
+        Node<Edge<int>>* edgeNode = listaVecinos.getHead();
+        int numVecinos = 0;
+        while (edgeNode) {
+            numVecinos++;
+            edgeNode = edgeNode->next;
+        }
+
+        if (numVecinos == 0) {
+            cout << "No hay salidas desde esta casilla. Estás atrapado.\n";
+            break;
+        }
+
+        // Reservamos arreglo de punteros a nodos de casillas
+        Node<Casilla<int>>** opciones = new Node<Casilla<int>>*[numVecinos];
+
+        // 2ª pasada: imprimir opciones y guardar los destinos
+        edgeNode = listaVecinos.getHead();
+        int idx = 0;
+        while (edgeNode) {
+            int idDestino = edgeNode->data.destino;  // el id de la casilla vecina
+            Node<Casilla<int>>* destinoNode = grafo->getCasillaPorId(idDestino);
+
+            // Por seguridad: si algo está raro y no encuentra la casilla
+            if (!destinoNode) {
+                cout << (idx + 1) << ". [ERROR: casilla " << idDestino << " no existe]\n";
+                opciones[idx] = nullptr;
+            } else {
+                opciones[idx] = destinoNode;
+                cout << (idx + 1) << ". " << destinoNode->data.getNombre()
+                     << " (id: " << idDestino
+                     << ", costo: " << edgeNode->data.costo << ")\n";
+            }
+
+            edgeNode = edgeNode->next;
+            idx++;
         }
 
         cout << "Elige tu movimiento: ";
         int eleccion;
         cin >> eleccion;
 
-        if (eleccion > 0 && eleccion <= numVecinos) {
-            casillaActual = vecinos[eleccion - 1];
+        if (eleccion > 0 && eleccion <= numVecinos &&
+            opciones[eleccion - 1] != nullptr) {
+            casillaActual = opciones[eleccion - 1];
+        } else {
+            cout << "Opción inválida, te quedas en la misma casilla.\n";
         }
+
+        delete[] opciones;
     }
 
     delete grafo;
     delete monstruos;
     return 0;
 }
-

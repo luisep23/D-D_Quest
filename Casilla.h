@@ -19,7 +19,7 @@ private:
     bool visitada;
 
 public:
-    
+
     bool operator==(const Casilla<T>& v) const {
         return id==v.getId();
     }
